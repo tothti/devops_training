@@ -18,10 +18,10 @@ chmod +x /usr/local/bin/gitea
 
 # download service file
 curl -LOk https://raw.githubusercontent.com/go-gitea/gitea/master/contrib/systemd/gitea.service
-if [ -f ./gitea.service ] then
-	cp gitea.service /etc/systemd/system/gitea.service
+if [[ -f ./gitea.service ]]; then
+	cp gitea.service /etc/systemd/system/gitea.service;
 else
-	echo "Gitea service file not found. / Download failed."
+	echo "Gitea service file not found. / Download failed.";
 fi
 
 # add user for gitea
@@ -35,11 +35,31 @@ mkdir /etc/gitea
 chown root:git /etc/gitea
 chmod 770 /etc/gitea
 
+# Open firewall port
+firewall-cmd --add-port 3000/tcp --permanent
+firewall-cmd --reload
+
 # start gitea
 systemctl daemon-reload
 systemctl enable gitea --now
 
-echo "Finished.
-Open in browser: http://<Your_IP>:3000"
+
+echo "
+
+Finished.
+
+Open in browser: http://<Your_IP>:3000
+
+
+- Click Register
+- Change:
+	\"Database Type\" to SQLite3
+	\"SSH Server Domain\" to your host's IP
+	\"Gitea Base URL\" to http://<Your_IP>:3000/
+- Click Install Gitea
+
+(First user will be added as an admin account)
+
+"
 
 exit 0
