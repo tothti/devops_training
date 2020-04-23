@@ -1,1 +1,17 @@
-test
+node('gcc') {
+   stage('Clone') { 
+
+      git 'http://192.168.56.200:3000/devops/devops_training.git'
+     
+   }
+   stage('Build') {
+      sh 'gcc -o hello hello.c'
+	  sh 'cp hello /tmp/hello'
+   }
+   stage('Test') {
+      sh '/tmp/hello'
+   }
+   stage('Notify') {
+       slackSend(channel: "#jenkins_tibike", message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+   }   
+}
