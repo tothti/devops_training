@@ -1,0 +1,41 @@
+Install
+
+# go to
+https://jenkins.io
+
+# > Download
+# Select RedHat
+# Set the Repository
+
+curl -Lk https://pkg.jenkins.io/redhat/jenkins.repo -o /etc/yum.repos.d/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+
+# Install prerequisits: Java 8
+yum install java-1.8.0-openjdk-devel -y
+
+# Install Jenkins
+yum install jenkins -y
+
+
+# Open firewall
+# https://jenkins.io/doc/book/installing/#fedora
+firewall-cmd --get-services | grep jenkins
+firewall-cmd --add-service=jenkins --permanent
+firewall-cmd --reload
+
+# Start and enable Jenkins service
+systemctl enable jenkins
+systemctl start jenkins
+systemctl status jenkins
+
+
+# Open Jenkins in browser / port 8080
+
+# get initial password
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+# copy PW in Jenkins Web page
+
+# Install suggested plugins
+
+# Create first Admin user
