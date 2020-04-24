@@ -1,0 +1,50 @@
+
+node('gcc') {
+  parameters {
+    choice(choices: ['Deploy', 'Start', 'Stop', 'Destroy'], description: '', name: 'action')
+    string(defaultValue: 'test', description: '', name: 'image_name', trim: false)
+  }
+  git 'https://github.com/tothti/devops_training.git'
+  if(action == 'Deploy') {
+    stage('clone') {
+	git 'https://github.com/tothti/httpd.git'
+    }
+    stage('Build') {
+      sh label: 'Docker Build', script: "cd 2.4 && sudo docker build -t ${image_name} ."
+      script {
+          timeout(time: 10, unit: 'MINUTES') {
+              input(id: "Gate", message: "Build docker container?", ok: 'Approve')
+          }
+      }
+    }
+    stage('Start Image') {
+        sh label: 'Docker Run', script: "sudo docker run -d --name test -p 80:80 ${image_name}"
+    }
+  }
+
+  if(action == 'Start') {
+	stage('Docker Start') {
+      sh label: 'Docker Start', script: "sudo docker start  ${image_name}"
+    }
+  }
+  
+  if(action == 'Stop') {
+	stage('Docker Stop') {
+      sh label: 'Docker Stop', script: "sudo docker stop ${image_name}"
+    }
+  }
+  
+  if(action == 'Destroy') {
+	stage('Docker Stop') {
+      sh label: 'Docker Stop', script: "sudo docker stop ${image_name}"
+    }
+    stage('destroy') {
+      script {
+          timeout(time: 10, unit: 'MINUTES') {
+              input(id: "Gate", message: "Remove docker container?", ok: 'Approve')
+          }
+      }
+      sh label: 'Destroy container', script: "sudo docker rm ${image_name}"
+    }
+  }
+}
