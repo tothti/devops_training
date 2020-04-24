@@ -11,12 +11,12 @@ node('gcc') {
 		sh 'ping -c1 google.com'
     }
     stage('Install') {
-      sh 'sudo yum install -y ${package_name}'
       script {
           timeout(time: 10, unit: 'MINUTES') {
               input(id: "Install Gate", message: "Install: ${package_name}", ok: 'Approve')
           }
       }
+	  sh 'sudo yum install -y ${package_name}'
     }
     stage('enable') {
         sh 'sudo systemctl enable ${package_name}'
