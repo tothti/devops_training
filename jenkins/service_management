@@ -1,0 +1,54 @@
+
+node('gcc') {
+  
+  parameters {
+    choice(choices: ['Install', 'Start', 'Stop', 'Remove'], description: '', name: 'action')
+    string(defaultValue: 'httpd', description: '', name: 'package_name', trim: false)
+  }
+  
+  if(action == 'Install') {
+    stage('network test') {
+		sh 'ping -c1 google.com'
+    }
+    stage('Install') {
+      sh 'sudo yum install -y ${package_name}'
+      script {
+          timeout(time: 10, unit: 'MINUTES') {
+              input(id: "Install Gate", message: "Install: ${package_name}", ok: 'Approve')
+          }
+      }
+    }
+    stage('enable') {
+        sh 'sudo systemctl enable ${package_name}'
+    }
+  }
+
+  if(action == 'Start') {
+	stage('Start') {
+      sh 'sudo systemctl start ${package_name}'
+    }
+  }
+  
+  if(action == 'Stop') {
+	stage('Stop') {
+      sh 'sudo systemctl stop ${package_name}'
+    }
+  }
+  
+  if(action == 'Remove') {
+	stage('Stop') {
+      sh 'sudo systemctl stop ${package_name}'
+    }
+	stage('Disable') {
+      sh 'sudo systemctl disable ${package_name}'
+    }	
+    stage('Remove') {
+      script {
+          timeout(time: 10, unit: 'MINUTES') {
+              input(id: "Remove Gate", message: "Remove: ${package_name}", ok: 'Approve')
+          }
+      }
+      sh 'sudo yum remove -y ${package_name}'
+    }
+  }
+}
