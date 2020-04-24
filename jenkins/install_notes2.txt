@@ -1,0 +1,35 @@
+##################
+Prepare Build Environment
+
+# log in to terminal
+# check jenkins user
+getent passwd jenkins
+
+
+# Change jenkins shell to bash
+usermod -s /bin/bash jenkins
+
+# Give a password for jenkins user
+passwd jenkins
+
+# Swith to jenkins
+su - jenkins
+
+# check jenkins' home
+pwd
+
+# Create a ssh-key for jenkins
+ssh-keygen
+
+# copy it to localhost
+ssh-copy-id localhost
+
+# check if it's working
+ssh localhost
+
+# add jenkins to sudoers
+echo "jenkins    ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/jenkins
+
+# test it
+su - jenkins
+sudo -l
